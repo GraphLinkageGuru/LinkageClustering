@@ -37,7 +37,6 @@ def AdjustedMutualInformation(truelist, testlist): #These are lists of vertices 
         V[testlist[i]].add(i)
     HV = -reduce(lambda x,y: x+(y*log2(y)), [len(Vi)/N for Vi in V], 0)
 
-
     n=np.zeros((N, N)) #contingency table
     a=np.zeros((N))    #marginal sums over 1st...
     b=np.zeros((N))    #...and 2nd index
@@ -53,11 +52,10 @@ def AdjustedMutualInformation(truelist, testlist): #These are lists of vertices 
         for j in range(len(V)):
             if n[i,j]>0:
                 MI+=n[i,j]/N * log2((n[i,j]*N) / (len(U[i])*len(V[j])))
-            for nij in range(max(0, a[i]+b[j]-N), min(a[i], b[j])+1):
-                EMI += (nij/N)*log2(N*nij/(a[i]*b[j]))*(fact(a[i])*fact(b[j])*fact(N-a[i])*fact(N-b[j]))/(fact(N)*fact(nij)*fact(a[i]-nij)*fact(b[j]-nij)*fact(N-a[i]-b[j]+nij))
+            for nij in range(int(max(0, a[i]+b[j]-N)), int(min(a[i], b[j])+1)):
+                if N*nij/(a[i]*b[j]) > 0:
+                    EMI += (nij/N)*log2(N*nij/(a[i]*b[j]))*(fact(a[i])*fact(b[j])*fact(N-a[i])*fact(N-b[j]))/(fact(N)*fact(nij)*fact(a[i]-nij)*fact(b[j]-nij)*fact(N-a[i]-b[j]+nij))
     AMI = (MI-EMI)/(max(HU, HV)-EMI)
-    
-    
     return AMI
 
 def GeneratePartitionedPointsList(PartitionList):
