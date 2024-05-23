@@ -37,9 +37,9 @@ def AdjustedMutualInformation(truelist, testlist): #These are lists of vertices 
         V[testlist[i]].add(i)
     HV = -reduce(lambda x,y: x+(y*log2(y)), [len(Vi)/N for Vi in V], 0)
 
-    n=np.zeros((N, N)) #contingency table
-    a=np.zeros((N))    #marginal sums over 1st...
-    b=np.zeros((N))    #...and 2nd index
+    n=np.zeros((N, N), dtype=int) #contingency table
+    a=np.zeros((N), dtype=int)    #marginal sums over 1st...
+    b=np.zeros((N), dtype=int)    #...and 2nd index
     for i in range(len(U)):
         for j in range(len(V)):
             uv = len(U[i].intersection(V[j]))
