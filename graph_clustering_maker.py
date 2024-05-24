@@ -8,7 +8,7 @@ from math import log2
 from math import factorial as fact
 from functools import reduce
 
-PartitionList = [3, 4, 5, 6]
+PartitionList = [3, 4, 5, 6] # make partitions for a graph with 1 cluster of size 3, 1 of size 4, 1 of size 5, 1 of size 6
 
 
 def DummyGradingScheme(truelist, testlist): #These are lists of vertices labeled with cluster number e.g. [1,1,0,0,0,2,2,2,2] for clusters {2,3,4}, {0,1}, {5,6,7,8}
@@ -58,14 +58,14 @@ def AdjustedMutualInformation(truelist, testlist): #These are lists of vertices 
     AMI = (MI-EMI)/(max(HU, HV)-EMI)
     return AMI
 
-def GeneratePartitionedPointsList(PartitionList):
+def GeneratePartitionedPointsList(PartitionList): # takes in partition list and writes a list of nodes in clusters from it 
     PointsList = []
     for ClassIndex, ClassSize in enumerate(PartitionList):
         for i in range(ClassSize):
             PointsList.append(ClassIndex)
     return PointsList
 
-def MakeAdjacencyMatrix(PointsList, InteriorChance, ExteriorChance):
+def MakeAdjacencyMatrix(PointsList, InteriorChance, ExteriorChance): # makes an ajancency matrix using the generate partitioned points list fnctn
     AdjMat = np.zeros((len(PointsList), len(PointsList)), dtype=int)
     for Xi, Xcls in enumerate(PointsList):
         for Yi, Ycls in enumerate(PointsList):

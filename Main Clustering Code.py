@@ -6,6 +6,8 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import AffinityPropagation
 import networkx as nx
 import CustomGraphVis.CustomGraph
+from graph_clustering_maker import GeneratePartitionedPointsList as generate_list
+from graph_clustering_maker import MakeAdjacencyMatrix as make_matrix # hee hee ha
 
 
 #function to find number of edges given number of vertices for a complete graph
@@ -25,10 +27,9 @@ def linkageClusterAgglom(dataset):
 
 def linkageClusterAff(dataset):
     labels_list = []
-    for x in ['ward', 'single', 'complete', 'average']:
-        affin_cluster = AffinityPropagation(linkage=x)
-        labels = affin_cluster.fit_predict(dataset)
-        labels_list.append([labels, x])
+    affin_cluster = AffinityPropagation()
+    labels = affin_cluster.fit_predict(dataset)
+    labels_list.append([labels])
     return labels_list
 
 
@@ -155,3 +156,18 @@ print('Affinity propagation test')
 affinityprop = linkageClusterAff(leaguedatasharpstone)
 for element3 in affinityprop:
     print(element3)
+
+
+# creating synthetic matrices and clustering it
+partition_list = [3, 3, 4, 4]
+graph_partitions = generate_list(partition_list)
+syntheticMatrix1 = make_matrix(graph_partitions, .9, .2) # exterior is between clusters, interior is in a cluster
+synth_cluster = linkageClusterAgglom(syntheticMatrix1)
+#CustomGraphVis.CustomGraph.MakeGraph(syntheticMatrix1,synth_cluster[11][0])
+
+# creating a synthetic matrix with the same exterior and interior parameters but totally different cluster sizes
+partition_list2 = [1, 5, 2, 6]
+graph_partitions2 = generate_list(partition_list2)
+syntheticMatrix2 = make_matrix(graph_partitions2, .9, .2) # exterior is between clusters, interior is in a cluster
+synth_cluster2 = linkageClusterAgglom(syntheticMatrix2)
+CustomGraphVis.CustomGraph.MakeGraph(syntheticMatrix2,synth_cluster2[8][0])
