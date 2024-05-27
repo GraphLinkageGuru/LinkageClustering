@@ -65,7 +65,7 @@ def GeneratePartitionedPointsList(PartitionList): # takes in partition list and 
             PointsList.append(ClassIndex)
     return PointsList
 
-def MakeAdjacencyMatrix(PointsList, InteriorChance, ExteriorChance): # makes an ajancency matrix using the generate partitioned points list fnctn
+def MakeAdjacencyMatrix(PointsList, InteriorChance, ExteriorChance): # makes an ajancency matrix using the generatepartitionedpointslist fnctn
     AdjMat = np.zeros((len(PointsList), len(PointsList)), dtype=int)
     for Xi, Xcls in enumerate(PointsList):
         for Yi, Ycls in enumerate(PointsList):

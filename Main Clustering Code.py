@@ -8,6 +8,7 @@ import networkx as nx
 import CustomGraphVis.CustomGraph
 from graph_clustering_maker import GeneratePartitionedPointsList as generate_list
 from graph_clustering_maker import MakeAdjacencyMatrix as make_matrix # hee hee ha
+from graph_clustering_maker import AdjustedMutualInformation as adjust
 
 
 #function to find number of edges given number of vertices for a complete graph
@@ -171,3 +172,33 @@ graph_partitions2 = generate_list(partition_list2)
 syntheticMatrix2 = make_matrix(graph_partitions2, .9, .2) # exterior is between clusters, interior is in a cluster
 synth_cluster2 = linkageClusterAgglom(syntheticMatrix2)
 CustomGraphVis.CustomGraph.MakeGraph(syntheticMatrix2,synth_cluster2[8][0])
+
+def FindMutualInformation(truelist, clusterlist): # set up for 3 clusters, fix later
+    ward = adjust(truelist, clusterlist[1][0])
+    single = adjust(truelist, clusterlist[7][0])
+    comp = adjust(truelist, clusterlist[7][0])
+    avg = adjust(truelist, clusterlist[10][0])
+    list = [ward, single, comp, avg]
+    max_AMI = max(list)
+    return list.index(max_AMI)
+
+#Adjusted Mutual Information Time
+# for 3 clusters right now 
+
+
+# sharpstone
+truelistS = sharplinks[4][0] # I am still confused on how to make this...I kinda just guessed 
+#wards = adjust(truelist, testlist)
+
+
+# TI
+#truelistT = tilinks[x][0]
+
+
+# Synth1
+truelist1 = [0,0,0,1,1,1,2,2,2,2,3,3,3,3] # based on partitionlist
+resultSynth1 = FindMutualInformation(truelist1,synth_cluster)
+print(resultSynth1)
+#synth2
+truelist2 = [0,1,1,1,1,1,2,2,3,3,3,3,3,3] # based on partitionlist2 [1, 5, 2, 6]
+#wards = adjust(truelist, testlist)
