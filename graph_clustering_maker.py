@@ -74,6 +74,8 @@ def MakeAdjacencyMatrix(PointsList, InteriorChance, ExteriorChance): # makes an 
                 AdjMat[Xi, Yi] = 1
     return AdjMat
 
+# Code below is for generating the 2D score against interior and exterior connections
+'''
 steps = 10
 trials = 10
 start = time.time()
@@ -95,3 +97,4 @@ X, Y = np.meshgrid(np.linspace(0, 1, steps+1), np.linspace(0, 1, steps+1))
 plt.pcolor(X, Y, GradeMat)
 plt.colorbar()
 plt.show()
+'''

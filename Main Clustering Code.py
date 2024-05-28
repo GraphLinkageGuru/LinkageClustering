@@ -10,17 +10,18 @@ from graph_clustering_maker import GeneratePartitionedPointsList as generate_lis
 from graph_clustering_maker import MakeAdjacencyMatrix as make_matrix # hee hee ha
 from graph_clustering_maker import AdjustedMutualInformation as adjust
 
-
+linkagenames = ['ward', 'single', 'complete', 'average']
 #function to find number of edges given number of vertices for a complete graph
 def findEdges(v):
     e = .5*v*(v-1)
     return e
 
 # functions to simplify clustering the datasets multiple times
+# used for the kiddo datasets
 def linkageClusterAgglom(dataset):
     labels_list = []
-    for x in ['ward', 'single', 'complete', 'average']:
-        for n in range(2,5):
+    for n in range(2,5):
+        for x in linkagenames:
             agglom_cluster = AgglomerativeClustering(n_clusters=n, metric='euclidean', linkage=x)
             labels = agglom_cluster.fit_predict(dataset)
             labels_list.append([labels, n, x])
@@ -159,46 +160,56 @@ for element3 in affinityprop:
     print(element3)
 
 
-# creating synthetic matrices and clustering it
-partition_list = [3, 3, 4, 4]
-graph_partitions = generate_list(partition_list)
-syntheticMatrix1 = make_matrix(graph_partitions, .9, .2) # exterior is between clusters, interior is in a cluster
-synth_cluster = linkageClusterAgglom(syntheticMatrix1)
-#CustomGraphVis.CustomGraph.MakeGraph(syntheticMatrix1,synth_cluster[11][0])
-
-# creating a synthetic matrix with the same exterior and interior parameters but totally different cluster sizes
-partition_list2 = [1, 5, 2, 6]
-graph_partitions2 = generate_list(partition_list2)
-syntheticMatrix2 = make_matrix(graph_partitions2, .9, .2) # exterior is between clusters, interior is in a cluster
-synth_cluster2 = linkageClusterAgglom(syntheticMatrix2)
-CustomGraphVis.CustomGraph.MakeGraph(syntheticMatrix2,synth_cluster2[8][0])
 
 def FindMutualInformation(truelist, clusterlist): # set up for 3 clusters, fix later
     ward = adjust(truelist, clusterlist[1][0])
-    single = adjust(truelist, clusterlist[7][0])
+    single = adjust(truelist, clusterlist[4][0])
     comp = adjust(truelist, clusterlist[7][0])
     avg = adjust(truelist, clusterlist[10][0])
     list = [ward, single, comp, avg]
     max_AMI = max(list)
     return list.index(max_AMI)
 
-#Adjusted Mutual Information Time
-# for 3 clusters right now 
+
+# Find the distibution of wins for each algorithm with a given partition list of form:
+# [1, 5, 2, 6], where each element is the amount of items in that partition
+def FindBestPerformer(partition_list, num_samples):
+    truth_list = generate_list(partition_list)
+    linkagePerformance = [0 for x in linkagenames]
+    for x in range(num_samples):
+        syntheticMatrix = make_matrix(truth_list, .9, .2) # exterior is between clusters, interior is in a cluster
+
+        for i,name in enumerate(linkagenames):
+            agglom_cluster = AgglomerativeClustering(n_clusters=len(partition_list), metric='euclidean', linkage=name)
+            labels = agglom_cluster.fit_predict(syntheticMatrix)
+            linkagePerformance[i] += adjust(truth_list, labels)
+        
+
+    performance = [val for val in linkagePerformance]
+    plt.bar(linkagenames, performance)
+    plt.xlabel('LinkageMethod')
+    plt.ylabel('Percent ')
+    plt.title('Bar Chart')
+    plt.show()
 
 
 # sharpstone
-truelistS = sharplinks[4][0] # I am still confused on how to make this...I kinda just guessed 
+#truelistS = sharplinks[4][0] # I am still confused on how to make this...I kinda just guessed 
 #wards = adjust(truelist, testlist)
 
 
-# TI
-#truelistT = tilinks[x][0]
+
+# Test a sparse partition configuration:
+sparse_partition = [1, 1, 1, 1, 1, 1, 1]
+print(FindBestPerformer(sparse_partition,100))
 
 
-# Synth1
-truelist1 = [0,0,0,1,1,1,2,2,2,2,3,3,3,3] # based on partitionlist
-resultSynth1 = FindMutualInformation(truelist1,synth_cluster)
-print(resultSynth1)
-#synth2
-truelist2 = [0,1,1,1,1,1,2,2,3,3,3,3,3,3] # based on partitionlist2 [1, 5, 2, 6]
-#wards = adjust(truelist, testlist)
+# Test a sparse partition configuration:
+sparse_partition = [1, 1, 1, 1, 1, 1, 1]
+print(FindBestPerformer(sparse_partition,100))
+
+
+# partitions!! :P
+partition_even = [3, 3, 3, 3, 3, 3, 3]
+partition_uneven = [1, 3, 9, 7, 5, 11]
+partition_small_uneven = [2, 3, 1, 4]
