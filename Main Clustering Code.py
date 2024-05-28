@@ -173,7 +173,7 @@ def FindMutualInformation(truelist, clusterlist): # set up for 3 clusters, fix l
 
 # Find the distibution of wins for each algorithm with a given partition list of form:
 # [1, 5, 2, 6], where each element is the amount of items in that partition
-def FindBestPerformer(partition_list, num_samples):
+def FindBestPerformer(partition_list, num_samples, caseName):
     truth_list = generate_list(partition_list)
     linkagePerformance = [0 for x in linkagenames]
     for x in range(num_samples):
@@ -184,32 +184,32 @@ def FindBestPerformer(partition_list, num_samples):
             labels = agglom_cluster.fit_predict(syntheticMatrix)
             linkagePerformance[i] += adjust(truth_list, labels)
         
-
-    performance = [val for val in linkagePerformance]
+    plt.figure(caseName)
+    performance = [val/num_samples for val in linkagePerformance]
     plt.bar(linkagenames, performance)
-    plt.xlabel('LinkageMethod')
-    plt.ylabel('Percent ')
-    plt.title('Bar Chart')
-    plt.show()
+    plt.xlabel('Linkage Method')
+    plt.ylabel('Average Adjusted Mutual Information Score')
+    plt.title('Linkage Method vs Performance ['+str(caseName)+']')
+    plt.ylim([0,1])
+    for i, v in enumerate(performance):
+        plt.text([j for j in range(0,4)][i]-0.125, v + 0.01, f'{v:.2f}')
+
 
 
 # sharpstone
 #truelistS = sharplinks[4][0] # I am still confused on how to make this...I kinda just guessed 
 #wards = adjust(truelist, testlist)
 
-
-
-# Test a sparse partition configuration:
-sparse_partition = [1, 1, 1, 1, 1, 1, 1]
-print(FindBestPerformer(sparse_partition,100))
-
-
-# Test a sparse partition configuration:
-sparse_partition = [1, 1, 1, 1, 1, 1, 1]
-print(FindBestPerformer(sparse_partition,100))
-
-
+# Test various partition configurations
 # partitions!! :P
-partition_even = [3, 3, 3, 3, 3, 3, 3]
+
+partition_even = [3, 3, 3, 3, 3, 3]
+FindBestPerformer(partition_even,1000,"Partition Even")
+
 partition_uneven = [1, 3, 9, 7, 5, 11]
+FindBestPerformer(partition_uneven,1000,"Partition Uneven")
+
 partition_small_uneven = [2, 3, 1, 4]
+FindBestPerformer(partition_small_uneven,1000,"Partition Small Uneven")
+
+plt.show()
