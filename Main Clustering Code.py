@@ -5,10 +5,14 @@ from sklearn import cluster
 from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import AffinityPropagation
 import networkx as nx
+import scipy.stats as st
 import CustomGraphVis.CustomGraph
 from graph_clustering_maker import GeneratePartitionedPointsList as generate_list
 from graph_clustering_maker import MakeAdjacencyMatrix as make_matrix # hee hee ha
 from graph_clustering_maker import AdjustedMutualInformation as adjust
+import time
+import random
+from tqdm import tqdm
 
 linkagenames = ['ward', 'single', 'complete', 'average']
 #function to find number of edges given number of vertices for a complete graph
@@ -173,27 +177,38 @@ def FindMutualInformation(truelist, clusterlist): # set up for 3 clusters, fix l
 
 # Find the distibution of wins for each algorithm with a given partition list of form:
 # [1, 5, 2, 6], where each element is the amount of items in that partition
-def FindBestPerformer(partition_list, num_samples, caseName):
+def FindBestPerformer(partition_list, num_samples, caseName, confidence):
     truth_list = generate_list(partition_list)
-    linkagePerformance = [0 for x in linkagenames]
+    linkagePerformance = [[] for x in linkagenames]
+    linkageTimes = {name:0 for name in linkagenames}
+
+    sampleRatio = 1/num_samples
+
     for x in range(num_samples):
         syntheticMatrix = make_matrix(truth_list, .9, .2) # exterior is between clusters, interior is in a cluster
 
         for i,name in enumerate(linkagenames):
+            startTime = time.time()
             agglom_cluster = AgglomerativeClustering(n_clusters=len(partition_list), metric='euclidean', linkage=name)
             labels = agglom_cluster.fit_predict(syntheticMatrix)
-            linkagePerformance[i] += adjust(truth_list, labels)
+
+            timeTaken = time.time()-startTime
+            linkageTimes[name] += timeTaken*sampleRatio
+            linkagePerformance[i].append(adjust(truth_list, labels))
         
     plt.figure(caseName)
-    performance = [val/num_samples for val in linkagePerformance]
-    plt.bar(linkagenames, performance)
+    performance = [sum(linkageType)/num_samples for linkageType in linkagePerformance]
+    standardDeviation = [np.std(linkageType)/np.sqrt(num_samples) for linkageType in linkagePerformance]
+    
+    plt.errorbar(linkagenames, performance, yerr=standardDeviation, fmt='o', color='k',ecolor = "black", capsize=3)
     plt.xlabel('Linkage Method')
     plt.ylabel('Average Adjusted Mutual Information Score')
     plt.title('Linkage Method vs Performance ['+str(caseName)+']')
     plt.ylim([0,1])
     for i, v in enumerate(performance):
-        plt.text([j for j in range(0,4)][i]-0.125, v + 0.01, f'{v:.2f}')
+        plt.text(i+(-0.25 if i == 3 else 0.05), v + 0.01, f'{v:.2f}')
 
+    return linkageTimes
 
 
 # sharpstone
@@ -204,12 +219,58 @@ def FindBestPerformer(partition_list, num_samples, caseName):
 # partitions!! :P
 
 partition_even = [3, 3, 3, 3, 3, 3]
-FindBestPerformer(partition_even,1000,"Partition Even")
-
+timesTaken = FindBestPerformer(partition_even,1000,"Partition Even", 0.95)
+print(timesTaken)
 partition_uneven = [1, 3, 9, 7, 5, 11]
-FindBestPerformer(partition_uneven,1000,"Partition Uneven")
+FindBestPerformer(partition_uneven,1000,"Partition Uneven", 0.95)
 
 partition_small_uneven = [2, 3, 1, 4]
-FindBestPerformer(partition_small_uneven,1000,"Partition Small Uneven")
+FindBestPerformer(partition_small_uneven,1000,"Partition Small Uneven", 0.95)
+
+def getComputationTime(num_samples, figureName, minSize, maxSize, stepSize):
+    countValues = []
+    timesTaken = []
+    
+    for count in tqdm(range(minSize,maxSize,stepSize)):
+        countValues.append(count)
+
+        linkageTimes = [0 for name in linkagenames]
+        partition_list = []
+        while(len(partition_list)<count):
+            partitionSize = random.randint(1,count-len(partition_list))
+            partition_list.append(partitionSize)
+
+        truth_list = generate_list(partition_list)
+
+        for x in range(num_samples):
+            syntheticMatrix = make_matrix(truth_list, .9, .2) # exterior is between clusters, interior is in a cluster
+
+            for i,name in enumerate(linkagenames):
+                startTime = time.time()
+                agglom_cluster = AgglomerativeClustering(n_clusters=len(partition_list), metric='euclidean', linkage=name)
+                labels = agglom_cluster.fit_predict(syntheticMatrix)
+
+                timeTaken = time.time()-startTime
+                linkageTimes[i] += timeTaken
+                
+        timesTaken.append([item/num_samples for item in linkageTimes])
+
+    timesTaken = np.transpose(timesTaken)
+
+    plt.figure(figureName)
+
+    for i,name in enumerate(linkagenames):
+        # Plotting the lines
+        plt.plot(countValues, timesTaken[i], label=name)
+    
+    plt.title('Node Count vs Computation Time')
+    # Adding labels
+    plt.xlabel('Node Count')
+    plt.ylabel('Time (seconds)')
+
+    # Adding a legend
+    plt.legend()
+
+#getComputationTime(10000,"Time Comparison",5,50,5)
 
 plt.show()
