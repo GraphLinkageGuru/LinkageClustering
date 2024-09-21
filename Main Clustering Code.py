@@ -7,40 +7,31 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.cluster import AffinityPropagation
 import networkx as nx
 import scipy.stats as st
-import CustomGraphVis.CustomGraph
+import CustomGraphVis.CustomGraph # import graph visualizer function
 from graph_clustering_maker import GeneratePartitionedPointsList as generate_list
-from graph_clustering_maker import MakeAdjacencyMatrix as make_matrix # hee hee ha
-from graph_clustering_maker import AdjustedMutualInformation as adjust
+from graph_clustering_maker import MakeAdjacencyMatrix as make_matrix #create a synthetic adjacency matrix
+from graph_clustering_maker import AdjustedMutualInformation as adjust # our own function for calculating AMI between given partitions and resulting partitions
 import time
 import random
 from tqdm import tqdm
 
-linkagenames = ['ward', 'single', 'complete', 'average']
+linkagenames = ['ward', 'single', 'complete', 'average'] # four linkages used for Agglomerative Clustering
 
 
 # functions to simplify clustering the datasets multiple times
-# used for the kiddo datasets
-def linkageClusterAgglom(dataset):
-    labels_list = []
+# used for the Little League Datasets
+def linkageClusterAgglom(dataset): # takes in a dataset and clusters it for n=2 through 5 clusters, and for each of the four given linkages
+    labels_list = [] # cluster labelings for each iteration, each node is given a number representing its cluster number
     for n in range(2,5):
         for x in linkagenames:
-            agglom_cluster = AgglomerativeClustering(n_clusters=n, metric='euclidean', linkage=x)
-            labels = agglom_cluster.fit_predict(dataset)
-            labels_list.append([labels, n, x])
-    return labels_list
-
-def linkageClusterAff(dataset):
-    labels_list = []
-    affin_cluster = AffinityPropagation()
-    labels = affin_cluster.fit_predict(dataset)
-    labels_list.append([labels])
+            agglom_cluster = AgglomerativeClustering(n_clusters=n, metric='euclidean', linkage=x) # set up agglomerative clustering
+            labels = agglom_cluster.fit_predict(dataset) # apply labels to the existing dataset
+            labels_list.append([labels, n, x]) # add current clustering scheme labels to label list
     return labels_list
 
 
-
-#pg 141 dataset
-
-# non-symmetric dataset 1st little league data
+#The Sharpstone dataset is on page 141
+# non-symmetric dataset Sharpstone little league data
 leaguedatasharpstone = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
               [1, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0, 1, 1],
               [1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0],
@@ -54,7 +45,7 @@ leaguedatasharpstone = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
               [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
-#non-symmetric second little league data
+#non-symmetric Transatlantic little league data
 leaguedataTI = [[1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0],
                 [0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 0],
                 [1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -70,11 +61,8 @@ leaguedataTI = [[1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0],
                 [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
 
 
-
-# testing different linkage methods on the sharpstone dataset
+# evaluating different linkage methods on the sharpstone dataset and TI dataset
 sharplinks = linkageClusterAgglom(leaguedatasharpstone)
-
-#TI dataset
 tilinks = linkageClusterAgglom(leaguedataTI)
 
 # graph visualization for sharpstone
@@ -86,24 +74,20 @@ print('TI Dataset')
 print('Agglomerative clustering')
 for element2 in tilinks:
     print(element2)
+# the next 2 lines are using custom graph visualizers to create the graph picture, they are commented out for convenience
 #CustomGraphVis.CustomGraph.MakeGraph(leaguedatasharpstone,sharplinks[9][0])
 #CustomGraphVis.CustomGraph.MakeGraph(leaguedataTI,tilinks[6][0])
-# second number stays zero to access the labels
-# first number is which set of labels you want to access, starting from 0
+
+# Hints to use this function:
+# second number stays zero to access the labels from the label list
+# first number is which set of labels you want to access, starting from 0 (0 being the labels with 2 clusters, ward linkage (etc))
 # ctrl p to save a png of current graph picture window
 # ctrl r to resize the window 
 # ctrl s to save the positioning
-# do ward vs single vs average vs complete for 3 clusters, I think that is the appropriate size for now 
-# for both the sharpstone and TI dataset
 
-# testing affinity propagation
-print('Affinity propagation test')
-affinityprop = linkageClusterAff(leaguedatasharpstone)
-for element3 in affinityprop:
-    print(element3)
-
-# testing whether Sam's AMI is the same as the one native to Scikit-learn
-
+# testing whether our AMI is the same as the one native to Scikit-learn
+# Conclusion: it is
+# creating dummy partitions
 dummyPartition1 = [1, 1, 1, 0, 0, 0, 2, 2, 2, 2]
 dummyPartition2 = [1, 0, 1, 0, 2, 0, 1, 2, 1, 2]
 dummyPartition3 = [1, 3, 1, 1, 2, 0, 1, 2, 2, 3]
