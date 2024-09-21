@@ -2,9 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn import metrics
 from sklearn.cluster import AgglomerativeClustering
-
 import random
-import numpy as np
 
 def generate_list(PartitionList): # takes in partition list and writes a list of nodes in clusters from it 
     PointsList = []

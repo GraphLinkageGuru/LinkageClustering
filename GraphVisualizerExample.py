@@ -3,7 +3,7 @@ from Tools import GraphVisualizer
 from datasets import *
 from Tools import GraphCluster as cluster
 
-# Example Linkage clustering from 
+# Example Linkage clustering
 sharplinks = cluster.linkage_cluster_agglom(leaguedatasharpstone)
 tilinks = cluster.linkage_cluster_agglom(leaguedataTI)
 

@@ -6,7 +6,7 @@ import Tools.GraphCluster as cluster
 sharplinks = cluster.linkage_cluster_agglom(leaguedatasharpstone)
 tilinks = cluster.linkage_cluster_agglom(leaguedataTI)
 
-# Graph visualization for sharpstone
+# Graph visualization for sharpstone and transatlantic
 print('Sharpstone Dataset')
 print('Agglomerative clustering')
 for element in sharplinks:
@@ -17,7 +17,7 @@ print('Agglomerative clustering')
 for element2 in tilinks:
     print(element2)
 
-# Test various partition configurations
+# Test various partition configurations to find the most accurate linkage
 # partitions!! :P
 
 partition_even = [3, 3, 3, 3, 3, 3]
