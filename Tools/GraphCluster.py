@@ -27,7 +27,7 @@ linkagenames = ['ward', 'single', 'complete', 'average'] # four linkages used fo
 
 # Functions to simplify clustering the datasets multiple times
 # used for the Little League Datasets
-def linkageClusterAgglom(dataset): # takes in a dataset and clusters it for n=2 through 5 clusters, and for each of the four given linkages
+def linkage_cluster_agglom(dataset): # takes in a dataset and clusters it for n=2 through 5 clusters, and for each of the four given linkages
     labels_list = [] # cluster labelings for each iteration, each node is given a number representing its cluster number
     for n in range(2,5):
         for x in linkagenames:
@@ -38,7 +38,7 @@ def linkageClusterAgglom(dataset): # takes in a dataset and clusters it for n=2 
 
 # Find the distibution of wins for each algorithm with a given partition list of form:
 # [1, 5, 2, 6], where each element is the amount of items in that partition
-def FindBestPerformer(partition_list, num_samples, caseName):
+def find_best_performer(partition_list, num_samples, caseName):
     truth_list = generate_list(partition_list)
     linkagePerformance = [[] for x in linkagenames]
 

@@ -4,8 +4,8 @@ from datasets import *
 from Tools import GraphCluster as cluster
 
 # Example Linkage clustering from 
-sharplinks = cluster.linkageClusterAgglom(leaguedatasharpstone)
-tilinks = cluster.linkageClusterAgglom(leaguedataTI)
+sharplinks = cluster.linkage_cluster_agglom(leaguedatasharpstone)
+tilinks = cluster.linkage_cluster_agglom(leaguedataTI)
 
 # Hints to use the function with the example dataset:
 # second number stays zero to access the labels from the label list
@@ -16,7 +16,7 @@ tilinks = cluster.linkageClusterAgglom(leaguedataTI)
 # space pauses the simulation
 
 # The following two lines are how the graph linkage visualizations for the paper were created.
-GraphVisualizer.MakeGraph(leaguedatasharpstone,sharplinks[9][0])
-GraphVisualizer.MakeGraph(leaguedataTI,tilinks[6][0])
+GraphVisualizer.make_graph(leaguedatasharpstone,sharplinks[9][0])
+GraphVisualizer.make_graph(leaguedataTI,tilinks[6][0])
 
 

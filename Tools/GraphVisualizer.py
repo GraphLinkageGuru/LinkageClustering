@@ -6,7 +6,7 @@ import matplotlib as plt
 from tkinter import filedialog
 import pickle
 
-def MakeGraph(relationMatrix, propagation_cluster):
+def make_graph(relationMatrix, propagation_cluster):
 
     grabbedID = -1
 
@@ -19,7 +19,6 @@ def MakeGraph(relationMatrix, propagation_cluster):
             self.nodeColor = nodeColor
 
     class Vec2():
-        # Trying something for fun. I wanted to replicate the functionality of the vec2 class found in GLSL, I could have just used numpy
         def __init__(self, x, y = None):
             if isinstance(x, (tuple, list, Vec2)):
                 if len(x) != 2:
@@ -31,7 +30,6 @@ def MakeGraph(relationMatrix, propagation_cluster):
                 self.x = x
                 self.y = y
 
-        # Funky way of making the operator stuff smaller, I would not do this in production code, but this is for fun.
         def selector(self,b,op):
             return Vec2(op(self.x,b.x),op(self.y,b.y)) if type(b) == Vec2 else Vec2(op(self.x,b),op(self.y,b)) 
         
@@ -106,7 +104,7 @@ def MakeGraph(relationMatrix, propagation_cluster):
     attractionForce = 0.002
     groupAttraction = 2
 
-    def RenderCircle():
+    def render_circle():
         font = pygame.font.Font(None, 24)  # Choose the font for the text, None is the default font, 24 is the size
         for i,point in enumerate(population):
             pygame.draw.circle(screen,point.nodeColor,point.pos,20)
@@ -114,7 +112,7 @@ def MakeGraph(relationMatrix, propagation_cluster):
             text_rect = text.get_rect(center=point.pos)  # Get the rectangle that encloses the text
             screen.blit(text, text_rect)  # Draw the text on the screen at the given position
 
-    def DrawEdges():
+    def draw_edges():
         for i in range(len(relationMatrix)):
             for j in range(len(relationMatrix[i])):
 
@@ -138,8 +136,8 @@ def MakeGraph(relationMatrix, propagation_cluster):
 
     while(True):
         screen.fill((255,255,255))
-        DrawEdges()
-        RenderCircle()
+        draw_edges()
+        render_circle()
 
         if simtoggle:
             avgPos = Vec2(0,0)

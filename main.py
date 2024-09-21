@@ -3,8 +3,8 @@ from datasets import *
 import Tools.GraphCluster as cluster
 
 # Evaluating different linkage methods on the sharpstone dataset and TI dataset from datasets.py
-sharplinks = cluster.linkageClusterAgglom(leaguedatasharpstone)
-tilinks = cluster.linkageClusterAgglom(leaguedataTI)
+sharplinks = cluster.linkage_cluster_agglom(leaguedatasharpstone)
+tilinks = cluster.linkage_cluster_agglom(leaguedataTI)
 
 # Graph visualization for sharpstone
 print('Sharpstone Dataset')
@@ -21,10 +21,10 @@ for element2 in tilinks:
 # partitions!! :P
 
 partition_even = [3, 3, 3, 3, 3, 3]
-cluster.FindBestPerformer(partition_even,10000,"Partition Even")
+cluster.find_best_performer(partition_even,10000,"Partition Even")
 
 partition_uneven = [1, 3, 9, 7, 5, 11]
-cluster.FindBestPerformer(partition_uneven,10000,"Partition Uneven")
+cluster.find_best_performer(partition_uneven,10000,"Partition Uneven")
 
 partition_small_uneven = [2, 3, 1, 4]
-cluster.FindBestPerformer(partition_small_uneven,10000,"Partition Small Uneven")
+cluster.find_best_performer(partition_small_uneven,10000,"Partition Small Uneven")
